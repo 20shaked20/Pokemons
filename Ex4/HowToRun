@@ -1,0 +1,4 @@
+0. open CMD
+1. navigate to Ex4_server_v0.0.jar directory
+2. java -jar Ex4_Server_v0.0.jar 0
+3. run student_code.py
