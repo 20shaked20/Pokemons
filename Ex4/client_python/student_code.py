@@ -43,7 +43,7 @@ for n in graph.Nodes:
     x, y, _ = n.pos.split(',')
     n.pos = SimpleNamespace(x=float(x), y=float(y))
 
- # get data proportions
+# get data proportions
 min_x = min(list(graph.Nodes), key=lambda n: n.pos.x).pos.x
 min_y = min(list(graph.Nodes), key=lambda n: n.pos.y).pos.y
 max_x = max(list(graph.Nodes), key=lambda n: n.pos.x).pos.x
@@ -53,7 +53,7 @@ max_y = max(list(graph.Nodes), key=lambda n: n.pos.y).pos.y
 def scale(data, min_screen, max_screen, min_data, max_data):
     """
     get the scaled data with proportions min_data, max_data
-    relative to min and max screen dimentions
+    relative to min and max screen dimensions
     """
     return ((data - min_data) / (max_data-min_data)) * (max_screen - min_screen) + min_screen
 
@@ -74,7 +74,7 @@ client.add_agent("{\"id\":0}")
 # client.add_agent("{\"id\":2}")
 # client.add_agent("{\"id\":3}")
 
-# this commnad starts the server - the game is running now
+# this command starts the server - the game is running now
 client.start()
 
 """
@@ -111,7 +111,7 @@ while client.is_running() == 'true':
         x = my_scale(n.pos.x, x=True)
         y = my_scale(n.pos.y, y=True)
 
-        # its just to get a nice antialiased circle
+        # it's just to get a nice anti-aliased circle
         gfxdraw.filled_circle(screen, int(x), int(y),
                               radius, Color(64, 80, 174))
         gfxdraw.aacircle(screen, int(x), int(y),
@@ -142,7 +142,9 @@ while client.is_running() == 'true':
     for agent in agents:
         pygame.draw.circle(screen, Color(122, 61, 23),
                            (int(agent.pos.x), int(agent.pos.y)), 10)
-    # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
+    # draw pokemons
+    # TODO: below - also figure our what are up and down pokemons
+    # note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
     for p in pokemons:
         pygame.draw.circle(screen, Color(0, 255, 255), (int(p.pos.x), int(p.pos.y)), 10)
 
@@ -152,6 +154,7 @@ while client.is_running() == 'true':
     # refresh rate
     clock.tick(60)
 
+    # TODO: this is where our algorithm kicks in
     # choose next edge
     for agent in agents:
         if agent.dest == -1:
