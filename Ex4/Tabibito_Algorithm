@@ -1,0 +1,20 @@
+This algorithm is for a traveller along a path full of pokemon - sitting on roads between cities
+this is represented by a Directed (Weighted?) Graph where the nodes are cities and the edges are roads
+
+the goal is to maximize the amount of pokemons captured and the total grade of captured pokemon ( grade varies between
+pokemon)
+
+Idea 1:
+
+step 0 - assume last path was correct (it was the best for that moment)
+step 1 - after we finish the last path (and collect the pokemon) there are 2 options:
+    option 1: no more pokemons -> game over
+    option 2: there is 1 pokemon sitting somewhere on the graph we will find the shortest path to that pokemon, and
+    set our traveller on that path, if there are more than 1 pokemon we will calculate the path to the most valuable one
+    and go there
+step 3 - repeat
+
+Idea 2:
+same as idea 1, but when checking for more than two pokemon we will consider both the pokemon weight AND the travel time
+how exactly we compare them both is TBD, but the idea is to not overexert our traveller if a much shorter path to a
+bit less valuable pokemon exists
