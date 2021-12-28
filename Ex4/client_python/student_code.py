@@ -55,7 +55,7 @@ def scale(data, min_screen, max_screen, min_data, max_data):
     get the scaled data with proportions min_data, max_data
     relative to min and max screen dimensions
     """
-    return ((data - min_data) / (max_data-min_data)) * (max_screen - min_screen) + min_screen
+    return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
 
 
 # decorate scale with the correct values
@@ -64,7 +64,7 @@ def my_scale(data, x=False, y=False):
     if x:
         return scale(data, 50, screen.get_width() - 50, min_x, max_x)
     if y:
-        return scale(data, 50, screen.get_height()-50, min_y, max_y)
+        return scale(data, 50, screen.get_height() - 50, min_y, max_y)
 
 
 radius = 15
@@ -82,6 +82,33 @@ The code below should be improved significantly:
 The GUI and the "algo" are mixed - refactoring using MVC design pattern is required.
 """
 
+
+# Start of helper methods and data structures
+
+# agent_paths = []
+
+# TODO: implement method
+def get_best_path(agent) -> list(int):
+    """
+    This method finds the best path for an agent in our 'game'
+    :param agent: TODO: understand what data type an agent is + add hint
+    :return: A path of integers representing the next set of nodes the agent will travel to
+    """
+    return []
+
+
+def assign_path(agent, new_path) -> None:
+    """
+    This method finds assigns the new_path to the agent and stores it in an array of paths
+    (one for each different agent)
+    :param agent: TODO: understand what data type an agent is + add hint
+    :param new_path: the path the agent will take next
+    """
+    agent_paths[agent].append(new_path)  # used append instead of assignment - just in case, should try both ways
+
+
+# End of helper methods and data structures
+
 while client.is_running() == 'true':
     pokemons = json.loads(client.get_pokemons(),
                           object_hook=lambda d: SimpleNamespace(**d)).Pokemons
@@ -93,6 +120,7 @@ while client.is_running() == 'true':
     agents = json.loads(client.get_agents(),
                         object_hook=lambda d: SimpleNamespace(**d)).Agents
     agents = [agent.Agent for agent in agents]
+    agent_paths = [] * len(agents)  # ADDED
     for a in agents:
         x, y, _ = a.pos.split(',')
         a.pos = SimpleNamespace(x=my_scale(
@@ -154,8 +182,24 @@ while client.is_running() == 'true':
     # refresh rate
     clock.tick(60)
 
-    # TODO: this is where our algorithm kicks in
     # choose next edge
+    for agent in agents:
+        if agent.dest == -1:
+            path = get_best_path(agent)
+            assign_path(agent, path)  # TODO: this method might have to reverse the list!!!
+            next_node = agent_paths[agent].pop()
+            client.choose_next_edge(
+                '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+            ttl = client.time_to_end()
+            print(ttl, client.get_info())
+        else:
+            next_node = agent_paths[agent].pop()
+            client.choose_next_edge(
+                '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+            ttl = client.time_to_end()
+            print(ttl, client.get_info())
+
+    """ Original movement:
     for agent in agents:
         if agent.dest == -1:
             next_node = (agent.src - 1) % len(graph.Nodes)
@@ -163,6 +207,7 @@ while client.is_running() == 'true':
                 '{"agent_id":'+str(agent.id)+', "next_node_id":'+str(next_node)+'}')
             ttl = client.time_to_end()
             print(ttl, client.get_info())
+    """
 
     client.move()
 # game over:
