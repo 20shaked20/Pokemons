@@ -3,7 +3,6 @@ import time
 
 import pygame
 import math
-from tkinter import *
 
 from Ex4.Project.DiGraph.GraphAlgo import GraphAlgo
 from Ex4.Project.DiGraph.DiGraph import DiGraph
@@ -29,63 +28,19 @@ class GraphGui:
         self.graph_algo = graph_algo
         self.nodesX = {}
         self.nodesY = {}
-        self.login = Tk()
-        self.user_name = StringVar()  # used for login
-        self.password = StringVar()  # used for login
-        self.login_lables()
-        self.login.mainloop()
-
-    def home_screen(self):
-        users = {'John': 'id', 'Shaked': '318985165', '1': '1'}
-        username = self.user_name.get()
-        print(username)
-        passwd = self.password.get()
-        if username in users:
-            if users[username] == passwd:
-                label4 = Label(self.login, text="Game loading... ", width=25, font=("arial", 40, "bold"))
-                label4.place(x=0, y=400)
-                time.sleep(1)
-                self.play_game()
-
-            else:  # incorrect id
-                label4 = Label(self.login, text="Wrong id's enter again", width=25, font=("arial", 40, "bold"))
-                label4.place(x=0, y=400)
-
-    def login_lables(self):
-        self.login.title("Game Login")
-        self.login.minsize(SIZE[0], SIZE[1])
-        self.login.maxsize(SIZE[0], SIZE[1])
-        label1 = Label(self.login, text=" Game Login ", fg="black", font=("new times roman", 40, "bold"))
-        label1.place(x=250, y=15)
-
-        label2 = Label(self.login, text="Username :", font=("arial", 16, "bold"))
-        label2.place(x=144, y=150)
-
-        textBox1 = Entry(self.login, textvar=self.user_name, width=30, font=("arial", 16, "bold"))
-        textBox1.place(x=290, y=150)
-
-        label3 = Label(self.login, text="Password :", font=("arial", 16, "bold"))
-        label3.place(x=150, y=250)
-
-        textBox2 = Entry(self.login, textvar=self.password, width=30, font=("arial", 16, "bold"))
-        textBox2.place(x=290, y=250)
-
-        button1 = Button(self.login, text="   Login   ", fg="black", bg="white", relief="raised",
-                         font=("arial", 16, "bold"),
-                         command=self.play_game)
-        button1.place(x=335, y=340)
+        self.screen = None
+        self.play_game()
 
     def play_game(self):
         pygame.init()
-        self.login.withdraw()
-        self.screen = pygame.display.set_mode(SIZE)
+        self.screen = pygame.display.set_mode(SIZE, depth=32, flags=16)  # 16 is resizable
         pygame.display.set_caption("Pokemon")
-        self.play_music()
+        # self.play_music()
         self.update_x_y_pos()
         self.run()
 
     def run(self):
-        bg = pygame.image.load('background.jpeg')
+        bg = pygame.image.load('/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/Project/GUI/background.jpeg')
         running = True
         while running:
             self.screen.fill('WHITE')
@@ -104,7 +59,7 @@ class GraphGui:
         i'e -> creates objects ( lines, elevators, floors... )
         """
         nodes = self.graph_algo.get_graph().get_all_v()
-        pokeball = pygame.image.load("pokeball.png")  # pokeball loader.
+        pokeball = pygame.image.load("/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/Project/GUI/pokeball.png")  # pokeball loader.
         for k in nodes:
             curr_x = self.nodesX[k]
             curr_y = self.nodesY[k]
@@ -119,7 +74,6 @@ class GraphGui:
             for v in out_edge:
                 end = [self.nodesX[v], self.nodesY[v]]
                 pygame.draw.line(self.screen, 'BLACK', start, end, 2)
-                # self.draw_arrow(BLACK, start, end)
 
     def play_music(self):
         file = 'theme_song.mp3'
@@ -155,17 +109,6 @@ class GraphGui:
 
             self.nodesX[curr_id] = int(x)
             self.nodesY[curr_id] = int(y)
-
-    def draw_arrow(self, colour, start, end):  # start = [x,y] end = [x,y]
-        pygame.draw.line(self.screen, colour, start, end, 2)
-        rotation = math.degrees(math.atan2(start[1] - end[1], end[0] - start[0])) + 90
-        pygame.draw.polygon(self.screen, BLACK, (
-            (end[0] - 5 * math.sin(math.radians(rotation)), end[1] - 5 * math.cos(math.radians(rotation))),
-            (
-                end[0] + 30 * math.sin(math.radians(rotation - 120)),
-                end[1] + 30 * math.cos(math.radians(rotation - 120))),
-            (end[0] + 30 * math.sin(math.radians(rotation + 120)),
-             end[1] + 30 * math.cos(math.radians(rotation + 120)))))
 
 
 if __name__ == '__main__':

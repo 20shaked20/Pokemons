@@ -39,8 +39,7 @@ class GraphAlgo:
         @returns True if the loading was successful, False o.w.
         """
         try:
-            with open(file_name, "r") as f:
-                _dict = json.load(f)
+                _dict = json.loads(file_name)
                 edges = _dict["Edges"]
                 nodes = _dict["Nodes"]
 
