@@ -18,7 +18,7 @@ BLACK = (0, 0, 0)
 PINK = (255, 200, 200)
 WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
-
+radius = 10
 # default port
 PORT = 6666
 # server host (default localhost 127.0.0.1)
@@ -31,77 +31,103 @@ pygame.display.set_caption("Pokemon")
 FONT = pygame.font.SysFont('Arial', 10, bold=True)
 clock = pygame.time.Clock()
 
-client = Client()
-client.start_connection(HOST, PORT)
-
-pokemons = client.get_pokemons()
-pokemons_obj = json.loads(pokemons, object_hook=lambda d: SimpleNamespace(**d))
-
-print(pokemons)
-
-graph_json = client.get_graph()
-
 """
 INTEGRATING OUR GRAPH WITH THE PROJECT:
 """
 
 g = DiGraph()
-graph_algo = GraphAlgo(g)
-graph_algo.load_from_json(graph_json)
-print(graph_algo.get_graph())
+agent_paths = {}
 
 
-for n in g_easy.Nodes:
-    x, y, _ = n.pos.split(',')
-    n.pos = SimpleNamespace(x=float(x), y=float(y))
+class game:
 
-# get data proportions
-min_x = min(list(g_easy.Nodes), key=lambda n: n.pos.x).pos.x
-min_y = min(list(g_easy.Nodes), key=lambda n: n.pos.y).pos.y
-max_x = max(list(g_easy.Nodes), key=lambda n: n.pos.x).pos.x
-max_y = max(list(g_easy.Nodes), key=lambda n: n.pos.y).pos.y
+    def __init__(self):
+        self.client = Client()
+        self.client.start_connection(HOST, PORT)
+        self.graph_algo = GraphAlgo(g)
+        self.pokemons = None
+        self.graph_json = None
 
+    def start(self):
+        self.init_graph()
+        self.init_pokemons()
+        self.set_nodes()
+        self.add_agents()
+        self.client.start()
 
-def scale(data, min_screen, max_screen, min_data, max_data):
-    """
-    get the scaled data with proportions min_data, max_data
-    relative to min and max screen dimensions
-    """
-    return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
+    def init_pokemons(self):
+        self.pokemons = json.loads(self.client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
+        self.pokemons = [p.Pokemon for p in self.pokemons]
+        for p in self.pokemons:
+            x, y, _ = p.pos.split(',')
+            p.pos = SimpleNamespace(x=float(x), y=float(y))
+        return self.pokemons
 
+    def init_graph(self):
+        tmp = self.client.get_graph()
+        self.graph_json = json.loads(tmp, object_hook=lambda json_dict: SimpleNamespace(**json_dict))
+        self.graph_algo.load_from_json(tmp)
 
-# decorate scale with the correct values
+    def set_nodes(self):
+        for n in self.graph_json.Nodes:
+            x, y, _ = n.pos.split(',')
+            n.pos = SimpleNamespace(x=float(x), y=float(y))
 
+    def get_data_proportions(self):
+        # get data proportions
+        min_x = min(list(self.graph_json.Nodes), key=lambda n: n.pos.x).pos.x
+        min_y = min(list(self.graph_json.Nodes), key=lambda n: n.pos.y).pos.y
+        max_x = max(list(self.graph_json.Nodes), key=lambda n: n.pos.x).pos.x
+        max_y = max(list(self.graph_json.Nodes), key=lambda n: n.pos.y).pos.y
+        return min_x, min_y, max_x, max_y
 
-def my_scale(data, x=False, y=False):
-    if x:
-        return scale(data, 50, screen.get_width() - 50, min_x, max_x)
-    if y:
-        return scale(data, 50, screen.get_height() - 50, min_y, max_y)
+    def scale(self, data, min_screen, max_screen, min_data, max_data):
+        """
+        get the scaled data with proportions min_data, max_data
+        relative to min and max screen dimensions
+        """
+        return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
 
+    # decorate scale with the correct values
 
-radius = 10
+    def my_scale(self, data, x=False, y=False):
+        data_prop = self.get_data_proportions()
+        if x:
+            return self.scale(data, 50, screen.get_width() - 50, data_prop[0], data_prop[2])
+        if y:
+            return self.scale(data, 50, screen.get_height() - 50, data_prop[1], data_prop[3])
 
-client.add_agent("{\"id\":0}")
-# client.add_agent("{\"id\":1}")
-# client.add_agent("{\"id\":2}")
-# client.add_agent("{\"id\":3}")
+    def add_agents(self):
+        self.client.add_agent("{\"id\":0}")
+        # client.add_agent("{\"id\":1}")
+        # client.add_agent("{\"id\":2}")
+        # client.add_agent("{\"id\":3}")
+
 
 # this command starts the server - the game is running now
-client.start()
+game = game()
+game.start()
 
 """
 The code below should be improved significantly:
 The GUI and the "algo" are mixed - refactoring using MVC design pattern is required.
 """
 
+
 # Start of helper methods and data structures
-agent_paths = {}
+
+def get_mvp(pokemons):
+    max_v = sys.float_info.min
+    curr_pokemon = None
+    for p in pokemons:
+        if p.value > max_v:
+            max_v = p.value
+            curr_pokemon = p
+    return p
 
 
-# pokemon_imgs = []
-# for i in range(0,10):
-#     pokemon_imgs.append()
+def get_closest_poke(pokemons, agent):
+    pass
 
 
 def get_best_path(agent, g_easy, g: DiGraph, pokemons) -> list:
@@ -110,11 +136,8 @@ def get_best_path(agent, g_easy, g: DiGraph, pokemons) -> list:
     :param agent: TODO: understand what data type an agent is + add hint
     :return: A path of integers representing the next set of nodes the agent will travel to
     """
-    pokemons = json.loads(client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
-    pokemons = [p.Pokemon for p in pokemons]
-    for p in pokemons:
-        x, y, _ = p.pos.split(',')
-        p.pos = SimpleNamespace(x=float(x), y=float(y))
+    pokemons = game.init_pokemons()
+    # chase_pokemon = get_mvp(pokemons)
     chase_pokemon = pokemons.pop()
     source = -1
     destination = -1
@@ -133,7 +156,6 @@ def get_best_path(agent, g_easy, g: DiGraph, pokemons) -> list:
         ca = dist(c_dst, a_p)
 
         da = ca + ba
-        # print(abs(da - bc))
 
         if abs(da - bc) <= eps:
             source = edge.src
@@ -141,34 +163,34 @@ def get_best_path(agent, g_easy, g: DiGraph, pokemons) -> list:
 
     if chase_pokemon.type == 1:
         print(agent.src, source)
-        ans = graph_algo.shortest_path(agent.src, source)[0]
+        ans = game.graph_algo.shortest_path(agent.src, source)[0]
         ans.append(destination)
         return ans
 
     else:
         print(agent.src, destination)
-        ans = graph_algo.shortest_path(agent.src, destination)[0]
+        ans = game.graph_algo.shortest_path(agent.src, destination)[0]
         ans.append(source)
         return ans
 
 
 # End of helper methods and data structures
 
-while client.is_running() == 'true':
-    pokemons = json.loads(client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
+while game.client.is_running() == 'true':
+    pokemons = json.loads(game.client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
     pokemons = [p.Pokemon for p in pokemons]
     for p in pokemons:
         x, y, _ = p.pos.split(',')
-        p.pos = SimpleNamespace(x=my_scale(
-            float(x), x=True), y=my_scale(float(y), y=True))
-    agents = json.loads(client.get_agents(),
+        p.pos = SimpleNamespace(x=game.my_scale(
+            float(x), x=True), y=game.my_scale(float(y), y=True))
+    agents = json.loads(game.client.get_agents(),
                         object_hook=lambda d: SimpleNamespace(**d)).Agents
     agents = [agent.Agent for agent in agents]
     agent_paths = [] * len(agents)  # ADDED
     for a in agents:
         x, y, _ = a.pos.split(',')
-        a.pos = SimpleNamespace(x=my_scale(
-            float(x), x=True), y=my_scale(float(y), y=True))
+        a.pos = SimpleNamespace(x=game.my_scale(
+            float(x), x=True), y=game.my_scale(float(y), y=True))
     # check events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -180,24 +202,24 @@ while client.is_running() == 'true':
     screen.blit(bg, (0, 0))
 
     # draw edges
-    for e in g_easy.Edges:
+    for e in game.graph_json.Edges:
         # find the edge nodes
         src = next(n for n in graph.Nodes if n.id == e.src)
         dest = next(n for n in graph.Nodes if n.id == e.dest)
 
         # scaled positions
-        src_x = my_scale(src.pos.x, x=True)
-        src_y = my_scale(src.pos.y, y=True)
-        dest_x = my_scale(dest.pos.x, x=True)
-        dest_y = my_scale(dest.pos.y, y=True)
+        src_x = game.my_scale(src.pos.x, x=True)
+        src_y = game.my_scale(src.pos.y, y=True)
+        dest_x = game.my_scale(dest.pos.x, x=True)
+        dest_y = game.my_scale(dest.pos.y, y=True)
 
         # draw the line
         pygame.draw.line(screen, Color("BLACK"),
                          (src_x, src_y), (dest_x, dest_y))
         # draw nodes
-    for n in g_easy.Nodes:
-        x = my_scale(n.pos.x, x=True)
-        y = my_scale(n.pos.y, y=True)
+    for n in game.graph_json.Nodes:
+        x = game.my_scale(n.pos.x, x=True)
+        y = game.my_scale(n.pos.y, y=True)
 
         # it's just to get a nice anti-aliased circle
         gfxdraw.filled_circle(screen, int(x), int(y),
@@ -238,14 +260,10 @@ while client.is_running() == 'true':
             next_node = agent_paths[agent].pop()
             client.choose_next_edge(
                 '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
-            ttl = client.time_to_end()
-            print(ttl, client.get_info())
+            ttl = game.client.time_to_end()
+            print(ttl, game.client.get_info())
         else:
-            next_node = agent_paths[agent].pop()
-            client.choose_next_edge(
-                '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
-            ttl = client.time_to_end()
-            print(ttl, client.get_info())
+            game.client.move()
 
     """ Original movement:
     for agent in agents:
@@ -257,5 +275,4 @@ while client.is_running() == 'true':
             print(ttl, client.get_info())
     """
 
-    client.move()
 # game over:
