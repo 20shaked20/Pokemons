@@ -2,8 +2,6 @@ from numpy.random import uniform
 from Ex4.Project.DiGraph.Node import Node
 
 
-# TODO: repr for DiGraph
-
 class DiGraph:
 
     def __init__(self, nodes: dict = None) -> None:
