@@ -1,3 +1,6 @@
+import random
+import threading
+import time
 from types import SimpleNamespace
 import json
 from pygame import gfxdraw
@@ -5,10 +8,11 @@ import pygame
 from pygame import *
 from Ex4.client_python.game import game
 from Ex4.client_python.Logic import Logic
+from time import sleep
 
 # Globals:
 RADIUS = 10
-FONT = pygame.font.SysFont('Arial', 10, bold=True)
+SIZE = 1280, 768
 
 
 # TODO :
@@ -29,95 +33,216 @@ class Arena:
     def __init__(self):
         self.game = game()
         self.game.start()
+        pygame.init()
         self.logic = Logic(self.game)
         self.agent_paths = {}
+        self.assigned_pokemons = []
+        self.agents = []
+        self.screen = None
+        self.clock = None
+        self.FONT = None
+        self.start_time = self.game.client.time_to_end()
+        self.run_py()
+        self.load_arena()
+
+    def run_py(self):
+        # self.screen = pygame.display.set_mode(SIZE, depth=32, flags=RESIZABLE)
+        self.screen = pygame.display.set_mode((SIZE[0], SIZE[1]), HWSURFACE | DOUBLEBUF | RESIZABLE)
+        pygame.display.set_caption("Pokemon")
+        self.clock = pygame.time.Clock()
+        self.FONT = pygame.font.SysFont('Arial', 10, bold=True)
+
+    def draw_timer(self):
+        text = str(pygame.time.get_ticks() / 1000) + "/" + str(round(float(self.start_time) / 1000))
+        font = pygame.font.Font(None, 32)
+        txt_surface = font.render(text, True, 'BLACK')
+        input_box = pygame.Rect(10, 10, 130, 32)
+        self.screen.blit(txt_surface, (15, 15))
+        pygame.draw.rect(self.screen, 'BLACK', input_box, 2)
+
+    def draw_moves(self):
+        info = self.game.init_info()
+        text = ' Moves: ' + str(info.moves)
+        font = pygame.font.Font(None, 32)
+        txt_surface = font.render(text, True, 'BLACK')
+        input_box = pygame.Rect(10, 45, 130, 32)
+        self.screen.blit(txt_surface, (10, 50))
+        pygame.draw.rect(self.screen, 'BLACK', input_box, 2)
+
+    def draw_score(self):
+        info = self.game.init_info()
+        text = ' Score: ' + str(info.grade)
+        font = pygame.font.Font(None, 32)
+        txt_surface = font.render(text, True, 'BLACK')
+        input_box = pygame.Rect(10, 80, 130, 32)
+        self.screen.blit(txt_surface, (10, 85))
+        pygame.draw.rect(self.screen, 'BLACK', input_box, 2)
+
+    def draw_edges(self):
+        for e in self.game.graph_json.Edges:
+            # find the edge nodes
+            src = next(n for n in self.game.graph_json.Nodes if n.id == e.src)
+            dest = next(n for n in self.game.graph_json.Nodes if n.id == e.dest)
+
+            # scaled positions
+            src_x = self.game.my_scale(src.pos.x, x=True)
+            src_y = self.game.my_scale(src.pos.y, y=True)
+            dest_x = self.game.my_scale(dest.pos.x, x=True)
+            dest_y = self.game.my_scale(dest.pos.y, y=True)
+
+            # draw the line
+            pygame.draw.line(self.screen, Color("BLACK"),
+                             (src_x, src_y), (dest_x, dest_y))
+
+    def draw_nodes(self):
+        for n in self.game.graph_json.Nodes:
+            x = self.game.my_scale(n.pos.x, x=True)
+            y = self.game.my_scale(n.pos.y, y=True)
+
+            # it's just to get a nice anti-aliased circle
+            gfxdraw.filled_circle(self.screen, int(x), int(y),
+                                  RADIUS, Color(64, 80, 174))
+            gfxdraw.aacircle(self.screen, int(x), int(y),
+                             RADIUS, Color(255, 255, 255))
+
+            # draw the node id
+            id_srf = self.FONT.render(str(n.id), True, Color(255, 255, 255))
+            rects = id_srf.get_rect(center=(x, y))
+            self.screen.blit(id_srf, rects)
+
+    def draw_agents(self):
+        self.agents = json.loads(self.game.client.get_agents(),
+                                 object_hook=lambda d: SimpleNamespace(**d)).Agents
+        self.agents = [agent.Agent for agent in self.agents]
+        for a in self.agents:
+            x, y, _ = a.pos.split(',')
+            a.pos = SimpleNamespace(x=self.game.my_scale(
+                float(x), x=True), y=self.game.my_scale(float(y), y=True))
+        for agent in self.agents:
+            pokeball = pygame.image.load(
+                "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/agents/Agent" + str(
+                    agent.id) + ".png")  # pokeball loader.
+            self.screen.blit(pokeball, (int(agent.pos.x - 10), int(agent.pos.y - 10)))
+
+    def draw_pokemons(self):
+        pokemons = json.loads(self.game.client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
+        pokemons = [p.Pokemon for p in pokemons]
+        for p in pokemons:
+            x, y, _ = p.pos.split(',')
+            p.pos = SimpleNamespace(x=self.game.my_scale(
+                float(x), x=True), y=self.game.my_scale(float(y), y=True))
+        for p in pokemons:
+            val = int((p.value % 7))
+            if val == 0:
+                val += 1
+            poke = pygame.image.load(
+                "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/pokemons/" + str(val) + ".png")  # pokeball loader.
+            self.screen.blit(poke, (int(p.pos.x - 10), int(p.pos.y - 10)))
+            # pygame.draw.circle(self.screen, Color(0, 255, 255), (int(p.pos.x), int(p.pos.y)), 10)
 
     def load_arena(self):
         while self.game.client.is_running() == 'true':
-            pokemons = json.loads(self.game.client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
-            pokemons = [p.Pokemon for p in pokemons]
-            for p in pokemons:
-                x, y, _ = p.pos.split(',')
-                p.pos = SimpleNamespace(x=self.game.my_scale(
-                    float(x), x=True), y=self.game.my_scale(float(y), y=True))
-            agents = json.loads(self.game.client.get_agents(),
-                                object_hook=lambda d: SimpleNamespace(**d)).Agents
-            agents = [agent.Agent for agent in agents]
-            for a in agents:
-                x, y, _ = a.pos.split(',')
-                a.pos = SimpleNamespace(x=self.game.my_scale(
-                    float(x), x=True), y=self.game.my_scale(float(y), y=True))
+            bg = pygame.image.load(
+                '/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/background.jpeg')
+            # self.screen.blit(bg, (0, 0))
+            self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
+
             # check events
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
                     pygame.quit()
                     exit(0)
-
+                elif events.type == VIDEORESIZE:
+                    self.screen = pygame.display.set_mode(
+                        events.dict['size'], HWSURFACE | DOUBLEBUF | RESIZABLE)
+                    self.game.update_size(events.dict['size'])
+                    self.screen.blit(pygame.transform.scale(bg, events.dict['size']), (0, 0))
+                    pygame.display.flip()
             # refresh surface
-            bg = pygame.image.load('/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/Project/GUI/background.jpeg')
-            self.game.screen.blit(bg, (0, 0))
 
+            self.draw_timer()
+            self.draw_moves()
+            self.draw_score()
             # draw edges
-            for e in self.game.graph_json.Edges:
-                # find the edge nodes
-                src = next(n for n in self.game.graph_json.Nodes if n.id == e.src)
-                dest = next(n for n in self.game.graph_json.Nodes if n.id == e.dest)
-
-                # scaled positions
-                src_x = self.game.my_scale(src.pos.x, x=True)
-                src_y = self.game.my_scale(src.pos.y, y=True)
-                dest_x = self.game.my_scale(dest.pos.x, x=True)
-                dest_y = self.game.my_scale(dest.pos.y, y=True)
-
-                # draw the line
-                pygame.draw.line(self.game.screen, Color("BLACK"),
-                                 (src_x, src_y), (dest_x, dest_y))
-                # draw nodes
-            for n in self.game.graph_json.Nodes:
-                x = self.game.my_scale(n.pos.x, x=True)
-                y = self.game.my_scale(n.pos.y, y=True)
-
-                # it's just to get a nice anti-aliased circle
-                gfxdraw.filled_circle(self.game.screen, int(x), int(y),
-                                      RADIUS, Color(64, 80, 174))
-                gfxdraw.aacircle(self.game.screen, int(x), int(y),
-                                 RADIUS, Color(255, 255, 255))
-
-                # draw the node id
-                id_srf = FONT.render(str(n.id), True, Color(255, 255, 255))
-                rects = id_srf.get_rect(center=(x, y))
-                self.game.screen.blit(id_srf, rects)
-
+            self.draw_edges()
+            # draw nodes
+            self.draw_nodes()
             # draw agents / pokeballs
-            for agent in agents:
-                pokeball = pygame.image.load(
-                    "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/Project/GUI/pokeball.png")  # pokeball loader.
-                self.game.screen.blit(pokeball, (int(agent.pos.x), int(agent.pos.y)))
-
+            self.draw_agents()
             # draw pokemons
-            for p in pokemons:
-                pygame.draw.circle(self.game.screen, Color(0, 255, 255), (int(p.pos.x), int(p.pos.y)), 10)
-
+            self.draw_pokemons()
             # update screen changes
             display.update()
+            # self.add_thread()
+            self.unthreaded_agents()
+            self.clock.tick(60)
 
-            # refresh rate (fps)
-            self.game.clock.tick(60)
+    def unthreaded_agents(self):
+        for agent in self.agents:
+            if agent.dest == -1:
+                if not self.agent_paths.get(agent.id):
+                    assigned_path, assigned_pokemon = self.logic.get_best_path(agent, self.game.graph_json,
+                                                                               self.game.graph_algo.get_graph(),
+                                                                               self.assigned_pokemons)
+                    self.agent_paths[agent.id] = assigned_path
+                    self.assigned_pokemons.append(assigned_pokemon)
+                next_node = self.agent_paths.get(agent.id).pop()
+                print("PATH : ", self.agent_paths.get(agent.id))
+                self.game.client.choose_next_edge(
+                    '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+                ttl = self.game.client.time_to_end()
+                print(ttl, self.game.client.get_info())
+            else:
+                sleep(0.1)
+                self.game.client.move()
 
-            # choose next edge
-            # our movement algo:
-            for agent in agents:
-                if agent.dest == -1:
-                    if not self.agent_paths.get(agent.id):
-                        self.agent_paths[agent.id] = self.logic.get_best_path(agent, self.game.graph_json,
-                                                                              self.game.graph_algo.get_graph())
-                        self.agent_paths[agent.id].reverse()
-                    next_node = self.agent_paths.get(agent.id).pop()
-                    print("PATH : ", self.agent_paths.get(agent.id))
-                    self.game.client.choose_next_edge(
-                        '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
-                    ttl = self.game.client.time_to_end()
-                    print(ttl, self.game.client.get_info())
-                else:
-                    self.game.client.move()
+    def add_thread(self):
+        thread_poll = []
+        for agent in self.agents:
+            t = myThread(self.game, agent=agent, agent_paths=self.agent_paths, logic=self.logic,
+                         assigned_pokemons=self.assigned_pokemons)
+            thread_poll.append(t)
+        for thread in thread_poll:
+            thread.start()
+            if len(thread_poll) > 1:
+                sleep(0.1)
+        for thread in thread_poll:
+            if len(thread_poll) > 1:
+                sleep(0.1)
+            thread.join()
+
+
+class myThread(threading.Thread):
+
+    def __init__(self, game, agent, agent_paths, logic, assigned_pokemons):
+        threading.Thread.__init__(self)
+        self.game = game
+        self.logic = logic
+        self.agent_paths = agent_paths
+        self.agent = agent
+        self.assigned_pokemons = assigned_pokemons
+
+    def run(self):
+        if self.agent.dest == -1:
+            if not self.agent_paths.get(self.agent.id):
+                assigned_path, assigned_pokemon = self.logic.get_best_path(self.agent, self.game.graph_json,
+                                                                           self.game.graph_algo.get_graph(),
+                                                                           self.assigned_pokemons)
+                self.agent_paths[self.agent.id] = assigned_path
+                if assigned_pokemon is not None:
+                    self.assigned_pokemons.append(assigned_pokemon)
+            next_node = self.agent_paths.get(self.agent.id).pop()
+            # print("PATH : ", self.agent_paths.get(self.agent.id))
+            self.game.client.choose_next_edge(
+                '{"agent_id":' + str(self.agent.id) + ', "next_node_id":' + str(next_node) + '}')
+            ttl = self.game.client.time_to_end()
+            print(ttl, self.game.client.get_info())
+        else:
+            sleep(0.1)
+            self.game.client.move()
+
+
 # game over:
+
+if __name__ == '__main__':
+    run = Arena()

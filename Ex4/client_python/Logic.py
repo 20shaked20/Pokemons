@@ -3,11 +3,12 @@ from math import dist
 from Ex4.Project.DiGraph.DiGraph import DiGraph
 from Ex4.client_python.game import game
 
+INF = float("inf")
+
 
 # TODO :
 #  1. abs paths.
 #  2. understand what data type an agent is + add hint
-
 class Logic:
     """
     This class is responsible for how our agents will and try to capture the pokemon.
@@ -36,38 +37,32 @@ class Logic:
         :return: A path of integers representing the next set of nodes the agent will travel to
         """
         pokemons = self.game.init_pokemons()
-        # chase_pokemon = get_mvp(pokemons)
-        chase_pokemon = pokemons.pop()
-        source = -1
-        destination = -1
-        eps = 0.00000001
-        for edge in graph_json.Edges:
-            src = g.get_all_v().get(edge.src)
-            dest = g.get_all_v().get(edge.dest)
-            if chase_pokemon.type < 0 and src < dest: continue
-            if chase_pokemon.type > 0 and src > dest: continue
-            a_p = [float(chase_pokemon.pos.x), float(chase_pokemon.pos.y)]  # x,y pokemon
-            b_src = [float(src[0]), float(src[1])]  # x,y for src
-            c_dst = [float(dest[0]), float(dest[1])]  # x,y for src
+        if pokemons is not None:
+            chase_pokemon = self.get_mvp(pokemons, assigned_pokemons)
+            # chase_pokemon = pokemons.pop()
+            print("SRC DEST", self.get_poke_edge(chase_pokemon, graph_json, g))
+            src_dest_tuple = self.get_poke_edge(chase_pokemon, graph_json, g)
+            if src_dest_tuple is None:
+                for node in g.all_out_edges_of_node(agent.src):
+                    return [node], None
+            source, destination = src_dest_tuple
 
-            bc = dist(b_src, c_dst)
-            ba = dist(b_src, a_p)
-            ca = dist(c_dst, a_p)
+            if chase_pokemon.type == 1:
+                # print(agent.src, destination)
+                ans = self.game.graph_algo.dijkstra(agent.src, destination)[0]
+                if ans == INF:
+                    return [source], chase_pokemon
+                if isinstance(ans, list):
+                    ans.reverse()
+                    return ans, chase_pokemon
+                return [ans], chase_pokemon
 
-            da = ca + ba
-
-            if abs(da - bc) <= eps:
-                source = edge.src
-                destination = edge.dest
-
-        if chase_pokemon.type == 1:
-            print(agent.src, source)
-            ans = self.game.graph_algo.dijkstra(agent.src, source)[0]
-            ans.append(destination)
-            return ans
-
-        else:
-            print(agent.src, destination)
-            ans = self.game.graph_algo.dijkstra(agent.src, destination)[0]
-            ans.append(source)
-            return ans
+            else:
+                # print(agent.src, source)
+                ans = self.game.graph_algo.dijkstra(agent.src, source)[0]
+                if ans == INF:
+                    return [destination], chase_pokemon
+                if isinstance(ans, list):
+                    ans.reverse()
+                    return ans, chase_pokemon
+                return [ans], chase_pokemon

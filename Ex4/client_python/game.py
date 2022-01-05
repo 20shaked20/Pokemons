@@ -5,7 +5,6 @@ import pygame
 from Ex4.Project.DiGraph.DiGraph import DiGraph
 from Ex4.Project.DiGraph.GraphAlgo import GraphAlgo
 
-SIZE = 800, 480
 # default port
 PORT = 6666
 # server host (default localhost 127.0.0.1)
@@ -26,24 +25,27 @@ class game:
         self.client = Client()
         self.client.start_connection(HOST, PORT)
         self.graph_algo = GraphAlgo(g)
-        self.screen = None
-        self.clock = None
+        self.start()
         self.pokemons = None
         self.graph_json = None
-        self.pygame()
-
-    def pygame(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode(SIZE, depth=32, flags=16)  # 16 is resizable
-        pygame.display.set_caption("Pokemon")
-        self.clock = pygame.time.Clock()
+        self.info = None
+        self.SIZE = 1280, 768
 
     def start(self):
         self.init_graph()
         self.init_pokemons()
-        self.set_nodes()
+        self.init_info()
         self.add_agents()
+        self.set_nodes()
         self.client.start()
+
+    def update_size(self, new_size):
+        self.SIZE = new_size
+
+    def init_info(self):
+        tmp = self.client.get_info()
+        self.info = json.loads(tmp, object_hook=lambda json_dict: SimpleNamespace(**json_dict)).GameServer
+        return self.info
 
     def init_pokemons(self):
         self.pokemons = json.loads(self.client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
@@ -82,12 +84,11 @@ class game:
     def my_scale(self, data, x=False, y=False):
         data_prop = self.get_data_proportions()
         if x:
-            return self.scale(data, 50, self.screen.get_width() - 50, data_prop[0], data_prop[2])
+            return self.scale(data, 50, self.SIZE[0] - 50, data_prop[0], data_prop[2])
         if y:
-            return self.scale(data, 50, self.screen.get_height() - 50, data_prop[1], data_prop[3])
+            return self.scale(data, 50, self.SIZE[1] - 50, data_prop[1], data_prop[3])
 
     def add_agents(self):
-        self.client.add_agent("{\"id\":0}")
-        # client.add_agent("{\"id\":1}")
-        # client.add_agent("{\"id\":2}")
-        # client.add_agent("{\"id\":3}")
+        size = self.info.agents
+        for i in range(0, size):
+            self.client.add_agent("{\"id\":" + str(i) + "}")
