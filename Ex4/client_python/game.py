@@ -1,7 +1,8 @@
 from types import SimpleNamespace
+
+from Ex4.client_python.Misc import misc
 from client import Client
 import json
-import pygame
 from Ex4.Project.DiGraph.DiGraph import DiGraph
 from Ex4.Project.DiGraph.GraphAlgo import GraphAlgo
 
@@ -10,11 +11,6 @@ PORT = 6666
 # server host (default localhost 127.0.0.1)
 HOST = '127.0.0.1'
 
-g = DiGraph()
-
-
-# TODO :
-#  1. abs paths.
 
 class game:
     """
@@ -24,12 +20,13 @@ class game:
     def __init__(self):
         self.client = Client()
         self.client.start_connection(HOST, PORT)
-        self.graph_algo = GraphAlgo(g)
-        self.start()
+        self.graph_algo = GraphAlgo()
+        self.misc = misc()
         self.pokemons = None
         self.graph_json = None
         self.info = None
         self.SIZE = 1280, 768
+        self.start()
 
     def start(self):
         self.init_graph()
@@ -89,6 +86,13 @@ class game:
             return self.scale(data, 50, self.SIZE[1] - 50, data_prop[1], data_prop[3])
 
     def add_agents(self):
-        size = self.info.agents
+        size = self.init_info()
+        size = size.agents
+        pokemons = self.init_pokemons()
         for i in range(0, size):
-            self.client.add_agent("{\"id\":" + str(i) + "}")
+            mvp, x = self.misc.get_mvp(pokemons=pokemons, assigned_pokemons=[])
+            print(x)
+            edge = self.misc.get_poke_edge(pokemon=mvp, graph_json=self.graph_json,
+                                           g=self.graph_algo.get_graph())
+            pokemons.pop(x)
+            self.client.add_agent("{\"id\":" + str(edge[1]) + "}")

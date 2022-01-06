@@ -11,7 +11,7 @@ class GraphAlgo:
     This class is used for algorithm on the graph.
     """
 
-    def __init__(self, graph: DiGraph):  # actually its DiGraph.
+    def __init__(self, graph: DiGraph = None):  # actually its DiGraph.
         """
         This is the constructor of the graph
         :param graph: represents a DiGraph.
@@ -85,14 +85,6 @@ class GraphAlgo:
             return INF, []
         unvisited_nodes = self.get_graph().get_all_v()
 
-        # From here below, we change Dijkstra to fit our pokemon game ->
-        # if id1 is neighbour of id2 return id2
-        for k in self.get_graph().all_out_edges_of_node(id1):
-            # print(k, "==", id2)
-            if k == id2:
-                return [id2]
-        # ----------- END OF POKEMON HELPER --------------#
-
         # Creating a dictionary of each node's distance from start_node(id1).
         # it will be updated using relaxation on each traverse
         dist_from_id1 = {}
@@ -139,8 +131,5 @@ class GraphAlgo:
             path.appendleft(current_node)
             current_node = previous_node[current_node]
         path.appendleft(id1)
-
-        if dist_from_id1[id2] is INF or dist_from_id1[id2] <= 0:
-            return INF, []
 
         return list(path), dist_from_id1[id2]

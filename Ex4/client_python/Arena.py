@@ -1,6 +1,3 @@
-import random
-import threading
-import time
 from types import SimpleNamespace
 import json
 from pygame import gfxdraw
@@ -8,22 +5,12 @@ import pygame
 from pygame import *
 from Ex4.client_python.game import game
 from Ex4.client_python.Logic import Logic
-from time import sleep
 import os
 
 # Globals:
 RADIUS = 10
 SIZE = 1280, 768
 
-
-# TODO :
-#  1. abs paths.
-#  2. figure our what are up and down pokemons
-#  note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
-#  3. add different pokemon images ( randomizer )
-#  4. consider creating & DO CREATE later :
-#   A.Agent.py -> responsible for movement & creation
-#   B.Pokemon.py -> responsible for creation of new pokemons & getting their before scale and after scale coordinates
 
 class Arena:
     """
@@ -32,36 +19,29 @@ class Arena:
     """
 
     def __init__(self):
+        pygame.init()
+        pygame.display.set_caption("Pokemon")
         parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
         self.images_path = parent_path + "/imgs/"
-        print(self.images_path)
         self.game = game()
         self.game.start()
-        pygame.init()
         self.logic = Logic(self.game)
         self.agent_paths = {}
         self.assigned_pokemons = []
         self.agents = []
-        self.screen = None
-        self.clock = None
-        self.FONT = None
-        self.start_time = self.game.client.time_to_end()
-        self.run_py()
-        self.load_arena()
-
-
-    def run_py(self):
-        # self.screen = pygame.display.set_mode(SIZE, depth=32, flags=RESIZABLE)
+        self.delay = 0
         self.screen = pygame.display.set_mode((SIZE[0], SIZE[1]), HWSURFACE | DOUBLEBUF | RESIZABLE)
-        pygame.display.set_caption("Pokemon")
         self.clock = pygame.time.Clock()
         self.FONT = pygame.font.SysFont('Arial', 10, bold=True)
+        self.start_time = self.game.client.time_to_end()
+        self.load_arena()
 
     def game_over(self):
         self.game.client.stop()
-        self.game.client.stop_connection()
-        pygame.quit()
-        exit(0)
+        save_info = self.game.client.get_info()
+        # self.game.client.stop_connection()
+        # pygame.quit()
+        # exit(0)
 
     def draw_stop_button(self):
         text = "stop"
@@ -140,9 +120,7 @@ class Arena:
             a.pos = SimpleNamespace(x=self.game.my_scale(
                 float(x), x=True), y=self.game.my_scale(float(y), y=True))
         for agent in self.agents:
-            pokeball = pygame.image.load(self.images_path +"agents/Agent"+ str(agent.id) + ".png")
-                #"/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/agents/Agent" + str(
-                #    agent.id) + ".png")  # pokeball loader.
+            pokeball = pygame.image.load(self.images_path + "agents/Agent" + str(agent.id) + ".png")
             self.screen.blit(pokeball, (int(agent.pos.x - 10), int(agent.pos.y - 10)))
 
     def draw_pokemons(self):
@@ -156,15 +134,14 @@ class Arena:
             val = int((p.value % 7))
             if val == 0:
                 val += 1
-            poke = pygame.image.load(self.images_path+"pokemons/" + str(val) + ".png")
-               # "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/pokemons/" + str(val) + ".png")  # pokeball loader.
+            poke = pygame.image.load(self.images_path + "pokemons/" + str(val) + ".png")
             self.screen.blit(poke, (int(p.pos.x - 10), int(p.pos.y - 10)))
-            # pygame.draw.circle(self.screen, Color(0, 255, 255), (int(p.pos.x), int(p.pos.y)), 10)
 
     def load_arena(self):
         while self.game.client.is_running() == 'true':
-            bg = pygame.image.load( self.images_path + "background.jpeg")
-                # '/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/background.jpeg')
+            self.delay += 1
+            bg = pygame.image.load(self.images_path + "background.jpeg")
+            # '/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/background.jpeg')
             # self.screen.blit(bg, (0, 0))
             self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
 
@@ -181,11 +158,12 @@ class Arena:
                     pygame.display.flip()
                 elif events.type == pygame.MOUSEBUTTONDOWN:
                     mouse = pygame.mouse.get_pos()
-                    if 150 <= mouse[0] <= 150+130 and 10 <= mouse[1] <= 32:
+                    if 150 <= mouse[0] <= 150 + 130 and 10 <= mouse[1] <= 32:
                         self.game_over()
-
+            if self.delay > 5:
+                self.game.client.move()
+                self.delay = 0
             # refresh surface
-
             self.draw_stop_button()
             self.draw_timer()
             self.draw_moves()
@@ -200,76 +178,20 @@ class Arena:
             self.draw_pokemons()
             # update screen changes
             display.update()
-            # self.add_thread()
             self.unthreaded_agents()
-            self.clock.tick(60)
 
     def unthreaded_agents(self):
         for agent in self.agents:
             if agent.dest == -1:
-                if not self.agent_paths.get(agent.id):
-                    assigned_path, assigned_pokemon = self.logic.get_best_path(agent, self.game.graph_json,
-                                                                               self.game.graph_algo.get_graph(),
-                                                                               self.assigned_pokemons)
-                    self.agent_paths[agent.id] = assigned_path
-                    self.assigned_pokemons.append(assigned_pokemon)
-                next_node = self.agent_paths.get(agent.id).pop()
-                print("PATH : ", self.agent_paths.get(agent.id))
+                curr_pokemons = self.game.init_pokemons()
+                next_node = self.logic.agent_path(agent=agent, pokemons=curr_pokemons,
+                                                  assigned_pokemons=self.assigned_pokemons,
+                                                  graph_algo=self.game.graph_algo, graph_json=self.game.graph_json)
+                print("NEXT NODE : ", next_node)
                 self.game.client.choose_next_edge(
                     '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
                 ttl = self.game.client.time_to_end()
                 print(ttl, self.game.client.get_info())
-            else:
-                sleep(0.1)
-                self.game.client.move()
-
-    def add_thread(self):
-        thread_poll = []
-        for agent in self.agents:
-            t = myThread(self.game, agent=agent, agent_paths=self.agent_paths, logic=self.logic,
-                         assigned_pokemons=self.assigned_pokemons)
-            thread_poll.append(t)
-        for thread in thread_poll:
-            thread.start()
-            if len(thread_poll) > 1:
-                sleep(0.1)
-        for thread in thread_poll:
-            if len(thread_poll) > 1:
-                sleep(0.1)
-            thread.join()
-
-
-class myThread(threading.Thread):
-
-    def __init__(self, game, agent, agent_paths, logic, assigned_pokemons):
-        threading.Thread.__init__(self)
-        self.game = game
-        self.logic = logic
-        self.agent_paths = agent_paths
-        self.agent = agent
-        self.assigned_pokemons = assigned_pokemons
-
-    def run(self):
-        if self.agent.dest == -1:
-            if not self.agent_paths.get(self.agent.id):
-                assigned_path, assigned_pokemon = self.logic.get_best_path(self.agent, self.game.graph_json,
-                                                                           self.game.graph_algo.get_graph(),
-                                                                           self.assigned_pokemons)
-                self.agent_paths[self.agent.id] = assigned_path
-                if assigned_pokemon is not None:
-                    self.assigned_pokemons.append(assigned_pokemon)
-            next_node = self.agent_paths.get(self.agent.id).pop()
-            # print("PATH : ", self.agent_paths.get(self.agent.id))
-            self.game.client.choose_next_edge(
-                '{"agent_id":' + str(self.agent.id) + ', "next_node_id":' + str(next_node) + '}')
-            ttl = self.game.client.time_to_end()
-            print(ttl, self.game.client.get_info())
-        else:
-            sleep(0.1)
-            self.game.client.move()
 
 
 # game over:
-
-if __name__ == '__main__':
-    run = Arena()

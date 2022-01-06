@@ -1,8 +1,6 @@
 import sys
-import time
 
 import pygame
-import math
 
 from Ex4.Project.DiGraph.GraphAlgo import GraphAlgo
 from Ex4.Project.DiGraph.DiGraph import DiGraph
