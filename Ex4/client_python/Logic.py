@@ -110,8 +110,9 @@ class Logic:
             # print("SRC DEST", self.get_poke_edge(chase_pokemon, graph_json, g))
             src_dest_tuple = self.get_poke_edge(chase_pokemon, graph_json, g)
             if src_dest_tuple is None:
+                src_dest_tuple = self.get_poke_edge(chase_pokemon, graph_json, g)  # TODO: THIS IS FOR DEBUGGING
                 for node in g.all_out_edges_of_node(agent.src):
-                    return [node], None
+                    return [node], None  # TODO: find a fix for this
             source, destination = src_dest_tuple
 
             if chase_pokemon.type == 1:

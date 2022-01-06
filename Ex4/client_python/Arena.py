@@ -57,6 +57,12 @@ class Arena:
         self.clock = pygame.time.Clock()
         self.FONT = pygame.font.SysFont('Arial', 10, bold=True)
 
+    def game_over(self):
+        self.game.client.stop()
+        self.game.client.stop_connection()
+        pygame.quit()
+        exit(0)
+
     def draw_stop_button(self):
         text = "stop"
         font = pygame.font.Font(None, 32)
@@ -175,11 +181,9 @@ class Arena:
                     pygame.display.flip()
                 elif events.type == pygame.MOUSEBUTTONDOWN:
                     mouse = pygame.mouse.get_pos()
-                    if  150 <= mouse[0] <= 150+130 and 10 <= mouse[1] <= 32:
-                        self.game.client.stop()
-                        self.game.client.stop_connection()
-                        pygame.quit()
-                        exit(0)
+                    if 150 <= mouse[0] <= 150+130 and 10 <= mouse[1] <= 32:
+                        self.game_over()
+
             # refresh surface
 
             self.draw_stop_button()
