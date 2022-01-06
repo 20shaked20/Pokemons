@@ -57,6 +57,16 @@ class Arena:
         self.clock = pygame.time.Clock()
         self.FONT = pygame.font.SysFont('Arial', 10, bold=True)
 
+    def draw_stop_button(self):
+        text = "stop"
+        font = pygame.font.Font(None, 32)
+        txt_surface = font.render(text, True, 'BLACK')
+        input_box = pygame.Rect(150, 10, 130, 32)
+        light_color = (170, 170, 170)
+        dark_color = 'BLACK'
+        self.screen.blit(txt_surface, (191, 15))
+        pygame.draw.rect(self.screen, dark_color, input_box, 2)
+
     def draw_timer(self):
         text = str(pygame.time.get_ticks() / 1000) + "/" + str(round(float(self.start_time) / 1000))
         font = pygame.font.Font(None, 32)
@@ -163,8 +173,16 @@ class Arena:
                     self.game.update_size(events.dict['size'])
                     self.screen.blit(pygame.transform.scale(bg, events.dict['size']), (0, 0))
                     pygame.display.flip()
+                elif events.type == pygame.MOUSEBUTTONDOWN:
+                    mouse = pygame.mouse.get_pos()
+                    if  150 <= mouse[0] <= 150+130 and 10 <= mouse[1] <= 32:
+                        self.game.client.stop()
+                        self.game.client.stop_connection()
+                        pygame.quit()
+                        exit(0)
             # refresh surface
 
+            self.draw_stop_button()
             self.draw_timer()
             self.draw_moves()
             self.draw_score()

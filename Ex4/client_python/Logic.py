@@ -51,7 +51,7 @@ class Logic:
                     path = self.game.graph_algo.dijkstra(agent.src, destination)[0]
                     if path == INF:
                         continue
-                    print(path)
+                    # print(path)
                     if len(path) < radius and len(path) < best:
                         best = len(path)
                         best_pokemon = p
@@ -59,7 +59,7 @@ class Logic:
                     path = self.game.graph_algo.dijkstra(agent.src, source)[0]
                     if path == INF:
                         continue
-                    print(path)
+                    # print(path)
                     if len(path) < radius and len(path) < best:
                         best = len(path)
                         best_pokemon = p
