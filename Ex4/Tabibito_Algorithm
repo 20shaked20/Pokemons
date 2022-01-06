@@ -18,3 +18,5 @@ Idea 2:
 same as idea 1, but when checking for more than two pokemon we will consider both the pokemon weight AND the travel time
 how exactly we compare them both is TBD, but the idea is to not overexert our traveller if a much shorter path to a
 bit less valuable pokemon exists
+
+Idea 3: add cuts to graph for each different agent (load balancing)
