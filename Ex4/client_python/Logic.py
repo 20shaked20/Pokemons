@@ -38,6 +38,33 @@ class Logic:
     def get_closest_poke(self, pokemons, agent):
         pass
 
+    def get_poke_in_radius(self, agent, pokemons, assigned_pokemons, radius: int, graph_json, g: DiGraph):
+        best = 10  # we want less than 4 nodes away from agent's src anyway.
+        best_pokemon = None
+        for p in pokemons:
+            if not self.is_assigned(p, assigned_pokemons):
+                src_dest_tuple = self.get_poke_edge(p, graph_json, g)
+                if src_dest_tuple is None:
+                    continue
+                source, destination = src_dest_tuple
+                if p.type == 1:
+                    path = self.game.graph_algo.dijkstra(agent.src, destination)[0]
+                    if path == INF:
+                        continue
+                    print(path)
+                    if len(path) < radius and len(path) < best:
+                        best = len(path)
+                        best_pokemon = p
+                else:
+                    path = self.game.graph_algo.dijkstra(agent.src, source)[0]
+                    if path == INF:
+                        continue
+                    print(path)
+                    if len(path) < radius and len(path) < best:
+                        best = len(path)
+                        best_pokemon = p
+        return best_pokemon
+
     def get_poke_edge(self, pokemon, graph_json, g: DiGraph) -> (int, int):
         source = -1
         destination = -1
@@ -74,10 +101,13 @@ class Logic:
         :return: A path of integers representing the next set of nodes the agent will travel to
         """
         pokemons = self.game.init_pokemons()
+        radius: int = 4
         if pokemons is not None:
-            chase_pokemon = self.get_mvp(pokemons, assigned_pokemons)
-            # chase_pokemon = pokemons.pop()
-            print("SRC DEST", self.get_poke_edge(chase_pokemon, graph_json, g))
+            # chase_pokemon = self.get_mvp(pokemons, assigned_pokemons)
+            chase_pokemon = self.get_poke_in_radius(agent,pokemons,assigned_pokemons,radius, graph_json, g)
+            if chase_pokemon is None:
+                chase_pokemon = self.get_mvp(pokemons, assigned_pokemons)
+            # print("SRC DEST", self.get_poke_edge(chase_pokemon, graph_json, g))
             src_dest_tuple = self.get_poke_edge(chase_pokemon, graph_json, g)
             if src_dest_tuple is None:
                 for node in g.all_out_edges_of_node(agent.src):

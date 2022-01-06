@@ -9,6 +9,7 @@ from pygame import *
 from Ex4.client_python.game import game
 from Ex4.client_python.Logic import Logic
 from time import sleep
+import os
 
 # Globals:
 RADIUS = 10
@@ -31,6 +32,9 @@ class Arena:
     """
 
     def __init__(self):
+        parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+        self.images_path = parent_path + "/imgs/"
+        print(self.images_path)
         self.game = game()
         self.game.start()
         pygame.init()
@@ -44,6 +48,7 @@ class Arena:
         self.start_time = self.game.client.time_to_end()
         self.run_py()
         self.load_arena()
+
 
     def run_py(self):
         # self.screen = pygame.display.set_mode(SIZE, depth=32, flags=RESIZABLE)
@@ -119,9 +124,9 @@ class Arena:
             a.pos = SimpleNamespace(x=self.game.my_scale(
                 float(x), x=True), y=self.game.my_scale(float(y), y=True))
         for agent in self.agents:
-            pokeball = pygame.image.load(
-                "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/agents/Agent" + str(
-                    agent.id) + ".png")  # pokeball loader.
+            pokeball = pygame.image.load(self.images_path +"agents/Agent"+ str(agent.id) + ".png")
+                #"/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/agents/Agent" + str(
+                #    agent.id) + ".png")  # pokeball loader.
             self.screen.blit(pokeball, (int(agent.pos.x - 10), int(agent.pos.y - 10)))
 
     def draw_pokemons(self):
@@ -135,15 +140,15 @@ class Arena:
             val = int((p.value % 7))
             if val == 0:
                 val += 1
-            poke = pygame.image.load(
-                "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/pokemons/" + str(val) + ".png")  # pokeball loader.
+            poke = pygame.image.load(self.images_path+"pokemons/" + str(val) + ".png")
+               # "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/pokemons/" + str(val) + ".png")  # pokeball loader.
             self.screen.blit(poke, (int(p.pos.x - 10), int(p.pos.y - 10)))
             # pygame.draw.circle(self.screen, Color(0, 255, 255), (int(p.pos.x), int(p.pos.y)), 10)
 
     def load_arena(self):
         while self.game.client.is_running() == 'true':
-            bg = pygame.image.load(
-                '/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/background.jpeg')
+            bg = pygame.image.load( self.images_path + "background.jpeg")
+                # '/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/background.jpeg')
             # self.screen.blit(bg, (0, 0))
             self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
 
