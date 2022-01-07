@@ -1,7 +1,7 @@
 import sys
 from math import dist
 
-from Ex4.Project.DiGraph.DiGraph import DiGraph
+from Ex4.DiGraph.DiGraph import DiGraph
 
 INF = float("inf")
 

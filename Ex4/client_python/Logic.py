@@ -1,6 +1,6 @@
 import sys
 from Ex4.client_python.game import game
-from Ex4.Project.DiGraph.GraphAlgo import GraphAlgo
+from Ex4.DiGraph.GraphAlgo import GraphAlgo
 
 INF = float("inf")
 
