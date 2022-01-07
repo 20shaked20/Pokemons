@@ -1,9 +1,8 @@
 from types import SimpleNamespace
 
-from Ex4.client_python.Misc import misc
+from Ex4.client_python.Misc import Misc
 from client import Client
 import json
-from Ex4.Project.DiGraph.DiGraph import DiGraph
 from Ex4.Project.DiGraph.GraphAlgo import GraphAlgo
 
 # default port
@@ -21,7 +20,7 @@ class game:
         self.client = Client()
         self.client.start_connection(HOST, PORT)
         self.graph_algo = GraphAlgo()
-        self.misc = misc()
+        self.misc = Misc()
         self.pokemons = None
         self.graph_json = None
         self.info = None

@@ -6,7 +6,10 @@ from Ex4.Project.DiGraph.DiGraph import DiGraph
 INF = float("inf")
 
 
-class misc:  # some helper methods used in other classes
+class Misc:
+    """
+    A class containing common helper methods
+    """
 
     def __init__(self):
         pass

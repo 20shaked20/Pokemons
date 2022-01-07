@@ -6,6 +6,7 @@ from pygame import *
 from Ex4.client_python.game import game
 from Ex4.client_python.Logic import Logic
 import os
+from Ex4.client_python.RunServerScript import server_stop
 
 # Globals:
 RADIUS = 10
@@ -19,10 +20,11 @@ class Arena:
     """
 
     def __init__(self):
+        # os.chdir(os.path.abspath(__file__))
         pygame.init()
         pygame.display.set_caption("Pokemon")
-        parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-        self.images_path = parent_path + "/imgs/"
+        # parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+        self.images_path = os.getcwd() + "/imgs/"
         self.game = game()
         self.game.start()
         self.logic = Logic(self.game)
@@ -40,6 +42,7 @@ class Arena:
         self.game.client.stop()
         save_info = self.game.client.get_info()
         # self.game.client.stop_connection()
+        # server_stop() # TODO: !!!
         # pygame.quit()
         # exit(0)
 
@@ -141,7 +144,6 @@ class Arena:
         while self.game.client.is_running() == 'true':
             self.delay += 1
             bg = pygame.image.load(self.images_path + "background.jpeg")
-            # '/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/imgs/background.jpeg')
             # self.screen.blit(bg, (0, 0))
             self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
 
@@ -157,27 +159,24 @@ class Arena:
                     self.screen.blit(pygame.transform.scale(bg, events.dict['size']), (0, 0))
                     pygame.display.flip()
                 elif events.type == pygame.MOUSEBUTTONDOWN:
-                    mouse = pygame.mouse.get_pos()
-                    if 150 <= mouse[0] <= 150 + 130 and 10 <= mouse[1] <= 32:
+                    mouse_ = pygame.mouse.get_pos()
+                    if 150 <= mouse_[0] <= 150 + 130 and 10 <= mouse_[1] <= 32:
                         self.game_over()
             if self.delay > 5:
                 self.game.client.move()
                 self.delay = 0
+
             # refresh surface
             self.draw_stop_button()
             self.draw_timer()
             self.draw_moves()
             self.draw_score()
-            # draw edges
             self.draw_edges()
-            # draw nodes
             self.draw_nodes()
-            # draw agents / pokeballs
             self.draw_agents()
-            # draw pokemons
             self.draw_pokemons()
-            # update screen changes
             display.update()
+
             self.unthreaded_agents()
 
     def unthreaded_agents(self):
