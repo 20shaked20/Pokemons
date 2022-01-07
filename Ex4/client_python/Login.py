@@ -36,11 +36,7 @@ class Login:
         self.login.geometry("{}x{}+{}+{}".format(self.size[0], self.size[1], x_cordinate, y_cordinate))
 
     def play(self):
-        t1 = threading.Thread(target=self.server_script.server_activate, args=[self.case.get()])
-        t2 = threading.Thread(target=Arena)
-        t1.start()
-        time.sleep(1)
-        t2.start()
+        Arena(self.case.get())
 
     def home_screen(self):
         if self.case.get() in self.cases:

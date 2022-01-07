@@ -18,5 +18,5 @@ class RunServerScript:
         CWD = os.getcwd()
         os.chdir(self.parent_path)
         os.system(command_run_server)
-        os.chdir(CWD)
+        exit(0)
 

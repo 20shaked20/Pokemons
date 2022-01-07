@@ -1,3 +1,4 @@
+import threading
 from types import SimpleNamespace
 import json
 from pygame import gfxdraw
@@ -6,7 +7,8 @@ from pygame import *
 from Ex4.client_python.game import game
 from Ex4.client_python.Logic import Logic
 import os
-from Ex4.client_python.RunServerScript import server_stop
+from Ex4.client_python.RunServerScript import RunServerScript
+import time
 
 # Globals:
 RADIUS = 10
@@ -19,11 +21,15 @@ class Arena:
     also is responsible for agent movement.
     """
 
-    def __init__(self):
+    def __init__(self, case: int):
         # os.chdir(os.path.abspath(__file__))
         pygame.init()
         pygame.display.set_caption("Pokemon")
         # parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+        self.server_script = RunServerScript()
+        self.t = threading.Thread(target=self.server_script.server_activate, daemon=True, args=[int(case)])
+        self.t.start()
+        time.sleep(1)
         self.images_path = os.getcwd() + "/imgs/"
         self.game = game()
         self.game.start()
@@ -39,12 +45,10 @@ class Arena:
         self.load_arena()
 
     def game_over(self):
+        pygame.quit()
         self.game.client.stop()
-        save_info = self.game.client.get_info()
-        # self.game.client.stop_connection()
-        # server_stop() # TODO: !!!
-        # pygame.quit()
-        # exit(0)
+        self.game.client.stop_connection()
+        exit(0)
 
     def draw_stop_button(self):
         text = "stop"
@@ -147,6 +151,8 @@ class Arena:
             # self.screen.blit(bg, (0, 0))
             self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
 
+            if round(pygame.time.get_ticks() / 1000) >= round(float(self.start_time) / 1000):
+                self.game_over()
             # check events
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
