@@ -33,6 +33,7 @@ Tabibito algorithm -
 ``` Arena ``` - This class is the *"main"* class, in charge of drawing the game state, activating ``` RunServerScript ``` once, and telling the agents to move.  </br>
  </br>
 ``` game ``` - This class is in charge of game initialization for ``` Arena ```.  </br>
+</br>
 ``` Logic ``` - This class is in charge of logical calculations, and as such *our algorithm is in this class*. </br>
  </br>
 ``` Login ``` - This class is a small 'login' GUI which allows the user to choose a case between 0 to 15.  </br>
