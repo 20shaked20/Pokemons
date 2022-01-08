@@ -27,10 +27,8 @@ class Arena:
 
     def __init__(self, case: int):
         self.case = case
-        # os.chdir(os.path.abspath(__file__))
         pygame.init()
         pygame.display.set_caption("Pokemon Level: " + str(case))
-        # parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
         self.server_script = RunServerScript()
         self.t = threading.Thread(target=self.server_script.server_activate, daemon=True, args=[int(case)])
         self.t.start()
@@ -182,12 +180,12 @@ class Arena:
                 val += 1
             poke = pygame.image.load(self.images_path + "pokemons/" + str(val) + ".png")
             if p.type == 1:  # up pokemon
-                plus = pygame.image.load(self.images_path+"pokemons/+.png")
-                self.screen.blit(plus, (int(p.pos.x - 10), int(p.pos.y-30)))
+                plus = pygame.image.load(self.images_path + "pokemons/+.png")
+                self.screen.blit(plus, (int(p.pos.x - 10), int(p.pos.y - 30)))
                 self.screen.blit(poke, (int(p.pos.x - 10), int(p.pos.y - 10)))
             if p.type == -1:  # down pokemon
                 minus = pygame.image.load(self.images_path + "pokemons/-.png")
-                self.screen.blit(minus, (int(p.pos.x - 10), int(p.pos.y-15)))
+                self.screen.blit(minus, (int(p.pos.x - 10), int(p.pos.y - 15)))
                 self.screen.blit(poke, (int(p.pos.x - 10), int(p.pos.y - 10)))
 
     def load_arena(self):
@@ -234,9 +232,9 @@ class Arena:
             self.draw_pokemons()
             display.update()
 
-            self.unthreaded_agents()
+            self.agent_movement()
 
-    def unthreaded_agents(self):
+    def agent_movement(self):
         """
         This method is responsible for agent movement.
         """
@@ -244,7 +242,6 @@ class Arena:
             if agent.dest == -1:
                 curr_pokemons = self.game.init_pokemons()
                 next_node = self.logic.agent_path(agent=agent, pokemons=curr_pokemons,
-                                                  assigned_pokemons=self.assigned_pokemons,
                                                   graph_algo=self.game.graph_algo, graph_json=self.game.graph_json)
                 print("NEXT NODE : ", next_node)
                 self.game.client.choose_next_edge(

@@ -16,23 +16,19 @@ class Logic:
     def __init__(self, game: game):
         self.game = game
 
-    def agent_path(self, agent, pokemons, assigned_pokemons, graph_algo: GraphAlgo, graph_json):
+    def agent_path(self, agent, pokemons, graph_algo: GraphAlgo, graph_json):
         """
         This method is using the dijkstra method we implemented in the last assignment to generate the best given path for our agent.
         what we did was to only assign the first node of the dijkstra path because we wanted our agent to move in single ticks.
         this way we can make sure if another agents picks up a pokemon our agent wont force going to it and will change course.
         """
         min_dist = sys.float_info.max
-        # chase_pokemon = None
         next = None
         src = agent.dest
         if agent.dest == -1:
             src = agent.src
 
         for pokemon in pokemons:
-            # print("ALL: ", assigned_pokemons)
-            # print("SINGLE: ", pokemon)
-            # if pokemon in assigned_pokemons: continue
             pokemon_edge = self.game.misc.get_poke_edge(pokemon=pokemon, graph_json=graph_json,
                                                         g=graph_algo.get_graph())
             if src == pokemon_edge[1]:
@@ -43,6 +39,4 @@ class Logic:
                 if dijkstra[1] < min_dist:
                     min_dist = dijkstra[1]
                     next = dijkstra[0][1]
-                    # chase_pokemon = pokemon
-        # assigned_pokemons.append(chase_pokemon)
         return next

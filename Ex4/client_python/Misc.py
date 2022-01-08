@@ -42,7 +42,6 @@ class Misc:
                 curr_pokemon = p
                 poke_id = i
             i += 1
-        # pokemons.remove(curr_pokemon)
         return curr_pokemon, poke_id
 
     def get_poke_edge(self, pokemon, graph_json, g: DiGraph) -> (int, int):
@@ -71,7 +70,4 @@ class Misc:
                 if abs(da - bc) <= eps:
                     source = edge.src
                     destination = edge.dest
-            # if pokemon.type == 1:
             return source, destination
-            # else:
-            #     return destination, source

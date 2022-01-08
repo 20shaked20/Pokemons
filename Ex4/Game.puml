@@ -1,0 +1,182 @@
+@startuml
+class GraphAlgo
+class DiGraph
+class Node
+
+class Client
+class game
+class Misc
+class Logic
+class RunServerScript
+class Arena
+class Login
+
+class Node{
+- id : int
+- pos : tuple
+- edges_in : dict
+- edges_out : dict
+
++ get_id()
++ get_pos()
++ add_edge_in()
++ add_edge_out()
++ node_dict()
++ all_edges_out_dict()
++ all_edges_int_dict()
++ __eq__()
+
+}
+
+class DiGraph{
+- nodes : dict
+- MC : int
+- edge_size : int
+
++ v_size()
++ e_size()
++ get_all_v()
++ all_in_edges_of_node()
++ all_out_edges_of_node()
++ get_mc()
++ add_edge()
++ add_node()
++ remove_node()
++ remove_edge()
++ __repr__()
+}
+
+class GraphAlgo{
+- INF = infinity
+- graph : DiGraph
+
++ get_graph()
++ load_from_json()
++ dijkstra()
+
+}
+
+
+class game{
+- PORT = 6666
+- HOST = 127.0.0.1
+- client : Client
+- graph_algo : GraphAlgo
+- pokemons
+- graph_json
+- info
+
++ start()
++ update_size()
++ init_info()
++ init_pokemons()
++ init_graph()
++ get_data_proportions()
++ scale()
++ my_scale()
++ add_agents()
+
+}
+
+class Client{
+- MSGLEN = 10000
+
++ start_connection()
++ __send_message()
++ get_agents()
++ add_agent()
++ get_graph()
++ get_info()
++ get_pokemon()
++ is_running()
++ time_to_end()
++ start()
++ stop()
++ move()
++ choose_next_edge()
++ log_in()
++ stop_connection()
+
+}
+class Misc{
+- INF = infinity
+
++ is_assigned()
++ get_mvp()
++ get_poke_edge()
+
+}
+
+class Logic{
+- game : game
++ agent_path()
+}
+
+class RunServerScript{
+- parent_path
+- server_jar_path
+- server_name
++ server_activate()
+}
+
+class Arena{
+- RADIUS = 10
+- SIZE = 1280x768
+- case : int
+- game : game
+- logic : Logic
+- agent_path : dict
+- assigned_pokemons : list
+- agents : list
+- delay : int
+- start_time : int
+- clock : pygame.clock
+- screen : pygame.display
+
++ game_over()
++ pause()
++ draw_stop_button()
++ draw_timer()
++ draw_moves()
++ draw_score()
++ draw_edges()
++ draw_nodes()
++ draw_agents()
++ draw_pokemons()
++ load_arena()
++ agent_movement()
+
+}
+class Login{
+- cases : list
+- size = 512x256
+- parent_path
+- login = Tk
+- case
+
++ window()
++ play()
++ home_screen()
++ login_labels()
+
+}
+Login <-- Arena : import
+Login <-- RunServerScript : import
+
+Arena <--- game : import
+Arena <-- Logic : import
+Arena <- RunServerScript : import
+
+Logic <--- game : import
+Logic <- GraphAlgo : import
+
+Misc <-- DiGraph : import
+
+game <--- Misc : import
+game <- Client : import
+game <-- GraphAlgo : import
+
+DiGraph <- Node : import
+GraphAlgo <- DiGraph : import
+
+@enduml
