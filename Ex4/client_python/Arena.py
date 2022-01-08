@@ -40,7 +40,6 @@ class Arena:
         self.agent_paths = {}
         self.assigned_pokemons = []
         self.agents = []
-        # self.delay = 0
         self.screen = pygame.display.set_mode((SIZE[0], SIZE[1]), HWSURFACE | DOUBLEBUF | RESIZABLE)
         self.clock = pygame.time.Clock()
         self.FONT = pygame.font.SysFont('Arial', 10, bold=True)
@@ -196,15 +195,11 @@ class Arena:
         obviously reaching a perfect 300 moves in 30 sec is far from reality because of other methods loading and taking some weight on the program.
         """
         while self.game.client.is_running() == 'true':
-            # self.delay += 1
             bg = pygame.image.load(self.images_path + "background.jpeg")
             self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
             self.clock.tick(60)
-            time.sleep(0.075)
+            time.sleep(0.075)  # used to reduce n.o of movement to be exactly under 600/300 for each case
             self.game.client.move()
-            # if self.delay > 5:
-            #     self.game.client.move()
-            #     self.delay = 0
 
             if round(pygame.time.get_ticks() / 1000) >= round(float(self.start_time) / 1000):
                 self.game_over()
