@@ -1,3 +1,7 @@
+"""
+ * Authors - Yonatan Ratner & Shaked Levi
+ * Date - 5.1.2022
+"""
 import json
 from collections import deque
 from random import uniform

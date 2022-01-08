@@ -1,3 +1,7 @@
+"""
+ * Authors - Yonatan Ratner & Shaked Levi
+ * Date - 7.1.2022
+"""
 import os
 
 
@@ -19,4 +23,3 @@ class RunServerScript:
         os.chdir(self.parent_path)
         os.system(command_run_server)
         exit(0)
-

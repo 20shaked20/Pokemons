@@ -1,3 +1,7 @@
+"""
+ * Authors - Yonatan Ratner & Shaked Levi
+ * Date - 6.1.2022
+"""
 import sys
 from math import dist
 
@@ -15,6 +19,9 @@ class Misc:
         pass
 
     def is_assigned(self, pokemon, assigned_pokemons):
+        """
+        This method checks if a pokemon is already assigned to another agent.
+        """
         for p in assigned_pokemons:
             if p is not None:
                 if p.pos.x == pokemon.pos.x and p.pos.y == pokemon.pos.y:
@@ -22,6 +29,9 @@ class Misc:
         return False
 
     def get_mvp(self, pokemons, assigned_pokemons):
+        """
+        This method finds the most valuable pokemon
+        """
         max_v = sys.float_info.min
         poke_id = 0
         i = 0
@@ -36,6 +46,9 @@ class Misc:
         return curr_pokemon, poke_id
 
     def get_poke_edge(self, pokemon, graph_json, g: DiGraph) -> (int, int):
+        """
+        This methods gets the edge on where the pokemon appears
+        """
         source = -1
         destination = -1
         eps = 0.00000001

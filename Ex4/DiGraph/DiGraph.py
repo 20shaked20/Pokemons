@@ -1,3 +1,7 @@
+"""
+ * Authors - Yonatan Ratner & Shaked Levi
+ * Date - 5.1.2022
+"""
 from numpy.random import uniform
 from Ex4.DiGraph.Node import Node
 

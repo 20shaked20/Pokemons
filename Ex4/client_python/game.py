@@ -1,3 +1,7 @@
+"""
+ * Authors - Yonatan Ratner & Shaked Levi
+ * Date - 5.1.2022
+"""
 from types import SimpleNamespace
 
 from Ex4.client_python.Misc import Misc
@@ -28,6 +32,9 @@ class game:
         self.start()
 
     def start(self):
+        """
+        Method to start client & applications of its methods
+        """
         self.init_graph()
         self.init_pokemons()
         self.init_info()
@@ -39,11 +46,17 @@ class game:
         self.SIZE = new_size
 
     def init_info(self):
+        """
+        Method to get the current info
+        """
         tmp = self.client.get_info()
         self.info = json.loads(tmp, object_hook=lambda json_dict: SimpleNamespace(**json_dict)).GameServer
         return self.info
 
     def init_pokemons(self):
+        """
+        Method to get the current pokemons
+        """
         self.pokemons = json.loads(self.client.get_pokemons(), object_hook=lambda d: SimpleNamespace(**d)).Pokemons
         self.pokemons = [p.Pokemon for p in self.pokemons]
         for p in self.pokemons:
@@ -52,6 +65,9 @@ class game:
         return self.pokemons
 
     def init_graph(self):
+        """
+        Method to init the graph at first time
+        """
         tmp = self.client.get_graph()
         self.graph_json = json.loads(tmp, object_hook=lambda json_dict: SimpleNamespace(**json_dict))
         self.graph_algo.load_from_json(tmp)
@@ -62,6 +78,7 @@ class game:
             n.pos = SimpleNamespace(x=float(x), y=float(y))
 
     def get_data_proportions(self):
+        """Method to get the data proportions"""
         # get data proportions
         min_x = min(list(self.graph_json.Nodes), key=lambda n: n.pos.x).pos.x
         min_y = min(list(self.graph_json.Nodes), key=lambda n: n.pos.y).pos.y
@@ -76,8 +93,10 @@ class game:
         """
         return ((data - min_data) / (max_data - min_data)) * (max_screen - min_screen) + min_screen
 
-    # decorate scale with the correct values
     def my_scale(self, data, x=False, y=False):
+        """
+        Scaling up x,y positions.
+        """
         data_prop = self.get_data_proportions()
         if x:
             return self.scale(data, 50, self.SIZE[0] - 50, data_prop[0], data_prop[2])
@@ -85,12 +104,15 @@ class game:
             return self.scale(data, 50, self.SIZE[1] - 50, data_prop[1], data_prop[3])
 
     def add_agents(self):
+        """
+        Method to add agents at some position in the graph.
+        in particular we chose to add the agents nearby the most valuable agents.
+        """
         size = self.init_info()
         size = size.agents
         pokemons = self.init_pokemons()
         for i in range(0, size):
             mvp, x = self.misc.get_mvp(pokemons=pokemons, assigned_pokemons=[])
-            print(x)
             edge = self.misc.get_poke_edge(pokemon=mvp, graph_json=self.graph_json,
                                            g=self.graph_algo.get_graph())
             pokemons.pop(x)

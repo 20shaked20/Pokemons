@@ -1,3 +1,9 @@
+"""
+ * Authors - Yonatan Ratner & Shaked Levi
+ * Date - 5.1.2022
+"""
+
+
 class Node:
 
     def __init__(self, _id: int, _pos: tuple) -> None:
