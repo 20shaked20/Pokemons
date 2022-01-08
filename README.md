@@ -26,13 +26,13 @@ Thirdly, we had to consider principles like S.O.L.I.D and MVC, and strive toward
 Tabibito algorithm -
 
 ## The Classes
-``` Ex4_Server_v0.0.jar ``` - This is *not* a class, but it is however an integral part of our project, as the entire game-state is managed through it.
-``` client ``` - This class is in charge of communicating with the server, receiving the game state and sending our agent's next move.
-``` Arena ``` - This class is the *"main"* class, in charge of drawing the game state, activating ``` RunServerScript ``` once, and telling the agents to move.
-``` game ``` - This class is in charge of game initialization for ``` Arena ```.
-``` Logic ``` - This class is in charge of logical calculations, and as such *our algorithm is in this class*. 
-``` Login ``` - This class is a small 'login' GUI which allows the user to choose a case between 0 to 15.
-``` Misc ``` - This class contains code snippets which are common to atleast two other classes in our code.
+``` Ex4_Server_v0.0.jar ``` - This is *not* a class, but it is however an integral part of our project, as the entire game-state is managed through it.  </br>
+``` client ``` - This class is in charge of communicating with the server, receiving the game state and sending our agent's next move.  </br>
+``` Arena ``` - This class is the *"main"* class, in charge of drawing the game state, activating ``` RunServerScript ``` once, and telling the agents to move.  </br>
+``` game ``` - This class is in charge of game initialization for ``` Arena ```.  </br>
+``` Logic ``` - This class is in charge of logical calculations, and as such *our algorithm is in this class*. </br>
+``` Login ``` - This class is a small 'login' GUI which allows the user to choose a case between 0 to 15.  </br>
+``` Misc ``` - This class contains code snippets which are common to atleast two other classes in our code.  </br>
 ``` RunServerScript ```
 
 
