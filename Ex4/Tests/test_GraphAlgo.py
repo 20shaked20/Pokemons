@@ -29,6 +29,6 @@ class TestGraphAlgo(TestCase):
         self.assertEqual(self.graph_algo.load_from_json("bla"), False))
 
     def test_dijkstra(self):
-        print(self.graph_algo.shortest_path(0, 6))
+        print(self.graph_algo.dijkstra(0, 6))
 
 
