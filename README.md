@@ -68,7 +68,9 @@ Thirdly, we had to consider principles like S.O.L.I.D and MVC, and strive toward
 - Naive solution first, then iterate for an elegant solution
 - Proper reasearch
 
-## File Hierarchy
+## Hierarchy
+![game_uml](https://user-images.githubusercontent.com/73894107/148647824-7fc8557d-23dd-4af1-b48b-1b70325e5063.png)
+
 
 
 ## Reading Material
