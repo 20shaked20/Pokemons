@@ -23,7 +23,15 @@ Secondly, we had to represent the entire game as a GUI, similar to 0 player game
 Thirdly, we had to consider principles like S.O.L.I.D and MVC, and strive towards them in our project architecture!
 
 ## The Algorithms
-Tabibito algorithm -
+``` Tabibito algorithm  ```: </br>
+- step 0: place agents initially next to the most valuable pokemons 
+- step 1: using Dijkstra's shortest path, find the closest not 'taken' pokemon
+- step 2: tell the agent where he needs to go according to step 1, and broadcast the pokemon as 'taken'
+- step 3: after the agent captured the pokemon, reapeat step 1.
+</br>
+*note 1 - we are indeed in charge of where the agent starts his journey.
+*note 2 - this is the algorithm we strove for, the implementation may be missing fine details, but follow the same idea.
+
 
 ## The Classes
 ``` Ex4_Server_v0.0.jar ``` - This is *not* a class, but it is however an integral part of our project, as the entire game-state is managed through it.  </br>
