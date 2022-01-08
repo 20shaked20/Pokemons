@@ -13,8 +13,7 @@ class TestGraphAlgo(TestCase):
     def setUp(self) -> None:
         nodes = {}
         g = DiGraph(nodes)
-        path = "/Users/Shaked/PycharmProjects/DirectedWeigthedGraph_2/Ex3/data/100Nodes.json"
-        # path = "C:/Users/yonar/PycharmProjects/DirectedWeigthedGraph_2/Ex3/data/A5.json"
+        path = "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/data/data/A2"
         self.graph_algo = GraphAlgo(g)
         self.graph_algo.load_from_json(path)
 
@@ -23,8 +22,7 @@ class TestGraphAlgo(TestCase):
         self.assertEqual(self.graph_algo.get_graph(), tmp_DiGraph)
 
     def test_load_from_json(self):
-        file_loc = "/Users/Shaked/PycharmProjects/DirectedWeigthedGraph_2/Ex3/data/100Nodes.json"
-        # file_loc = "C:/Users/yonar/PycharmProjects/DirectedWeigthedGraph_2/Ex3/data/A5.json"
+        file_loc = "/Users/Shaked/PycharmProjects/Ex4-Pokemons/Ex4/data/data/A2"
         self.assertEqual(self.graph_algo.load_from_json(file_loc), True)
         self.assertEqual(self.graph_algo.load_from_json("bla"), False))
 
