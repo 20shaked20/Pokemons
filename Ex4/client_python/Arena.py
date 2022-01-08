@@ -196,7 +196,7 @@ class Arena:
         obviously reaching a perfect 300 moves in 30 sec is far from reality because of other methods loading and taking some weight on the program.
         """
         while self.game.client.is_running() == 'true':
-            self.delay += 1
+            # self.delay += 1
             bg = pygame.image.load(self.images_path + "background.jpeg")
             self.screen.blit(pygame.transform.scale(bg, (SIZE[0], SIZE[1])), (0, 0))
             self.clock.tick(60)
