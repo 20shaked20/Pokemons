@@ -3,7 +3,8 @@
  * Date - 5.1.2022
 """
 from numpy.random import uniform
-from Ex4.DiGraph.Node import Node
+
+from Ex4.client_python.DiGraph.Node import Node
 
 
 class DiGraph:

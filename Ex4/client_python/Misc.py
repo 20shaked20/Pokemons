@@ -2,10 +2,11 @@
  * Authors - Yonatan Ratner & Shaked Levi
  * Date - 6.1.2022
 """
+import os
 import sys
 from math import dist
 
-from Ex4.DiGraph.DiGraph import DiGraph
+from DiGraph.DiGraph import DiGraph
 
 INF = float("inf")
 
@@ -71,3 +72,14 @@ class Misc:
                     source = edge.src
                     destination = edge.dest
             return source, destination
+
+    @staticmethod
+    def resource_path(relative_path):
+        """ Get absolute path to resource, works for dev and for PyInstaller """
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)

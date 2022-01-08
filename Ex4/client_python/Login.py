@@ -6,8 +6,9 @@ import os
 import time
 from tkinter import *
 from PIL import ImageTk, Image
-from Ex4.client_python.Arena import Arena
-from Ex4.client_python.RunServerScript import RunServerScript
+from Arena import Arena
+from Misc import Misc
+from RunServerScript import RunServerScript
 
 
 class Login:
@@ -19,7 +20,8 @@ class Login:
         self.server_script = RunServerScript()
         self.cases = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"}
         self.size = 512, 256  # y,x
-        parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+        os.chdir(os.path.abspath(os.path.join(os.getcwd(), os.pardir)))
+        parent_path = Misc.resource_path(relative_path='data')
         self.images_path = parent_path + "/imgs/"
         self.login = Tk()
         self.window()

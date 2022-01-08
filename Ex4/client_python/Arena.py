@@ -8,10 +8,11 @@ import json
 from pygame import gfxdraw
 import pygame
 from pygame import *
-from Ex4.client_python.game import game
-from Ex4.client_python.Logic import Logic
+from game import game
+from Logic import Logic
+from Misc import Misc
 import os
-from Ex4.client_python.RunServerScript import RunServerScript
+from RunServerScript import RunServerScript
 import time
 
 # Globals:
@@ -33,7 +34,9 @@ class Arena:
         self.t = threading.Thread(target=self.server_script.server_activate, daemon=True, args=[int(case)])
         self.t.start()
         time.sleep(1)
-        self.images_path = os.getcwd() + "/imgs/"
+        os.chdir(os.path.abspath(os.path.join(os.getcwd(), os.pardir)))
+        parent_path = Misc.resource_path(relative_path='data')
+        self.images_path = parent_path + "/imgs/"
         self.game = game()
         self.game.start()
         self.logic = Logic(self.game)

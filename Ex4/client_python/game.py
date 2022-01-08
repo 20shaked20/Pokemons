@@ -4,10 +4,10 @@
 """
 from types import SimpleNamespace
 
-from Ex4.client_python.Misc import Misc
+from Misc import Misc
 from client import Client
 import json
-from Ex4.DiGraph.GraphAlgo import GraphAlgo
+from DiGraph.GraphAlgo import GraphAlgo
 
 # default port
 PORT = 6666

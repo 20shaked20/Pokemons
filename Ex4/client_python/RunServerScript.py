@@ -3,6 +3,7 @@
  * Date - 7.1.2022
 """
 import os
+from Misc import Misc
 
 
 def server_stop():
@@ -13,13 +14,11 @@ def server_stop():
 class RunServerScript:
 
     def __init__(self):
-        self.parent_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-        self.server_jar_path = self.parent_path + "/Ex4_Server_v0.0.jar"  # this is exact!
         self.server_name = "Ex4_Server_v0.0.jar"
+        self.parent_path = Misc.resource_path(relative_path='data')
 
     def server_activate(self, case: int):
-        command_run_server = 'java -jar ' + self.server_name + ' ' + str(case)
-        CWD = os.getcwd()
+        command_run_server = 'java -jar ' + os.path.join(self.parent_path, self.server_name) + ' ' + str(case)
         os.chdir(self.parent_path)
         os.system(command_run_server)
         exit(0)

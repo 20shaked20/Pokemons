@@ -3,8 +3,8 @@
  * Date - 5.1.2022
 """
 import sys
-from Ex4.client_python.game import game
-from Ex4.DiGraph.GraphAlgo import GraphAlgo
+from game import game
+from DiGraph.GraphAlgo import GraphAlgo
 
 
 class Logic:

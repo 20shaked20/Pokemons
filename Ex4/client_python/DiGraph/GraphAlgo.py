@@ -5,7 +5,7 @@
 import json
 from collections import deque
 from random import uniform
-from Ex4.DiGraph.DiGraph import DiGraph
+from Ex4.client_python.DiGraph.DiGraph import DiGraph
 
 INF = float("inf")
 
