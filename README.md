@@ -58,6 +58,46 @@ note 2 - this is the algorithm we strove for, the implementation may be missing 
 
 ## How To use
 
+Note - you can unpack the .zip if you choose to, it works either way!
+
+- Step 0: finding this repository! - *this is absolutely critical*.
+</br></br>
+- Step 1: finding our realase, have a look at this picture if you're having trouble locating it (or scroll all the way UP)
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678274-9b547ce3-3343-48ce-aec9-11a83beb8102.png)
+</br></br>
+- Step 2: choose a distribution that's appropriate to your OS, it's one of these:
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678398-f778697b-a535-4016-84b1-930e00257960.png)
+</br></br>
+- Step 3: after you open the appropriate .zip file, you should navigate to this: </br>
+- For WINDOWS: 
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678476-c79f82d3-fd3d-4e39-ba6d-fafeaf09a472.png)
+</br></br>
+and then click on ``` Login.exe ```
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678495-035fd404-b539-4b14-a6f9-d81f00785e84.png)
+<br></br>
+- For MAC: 
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678542-04ae5519-9e32-4156-8eec-7fe0f6b5b36c.png)
+</br></br>
+and then activate ``` Login ``` as you would other .exe like files in MAC 
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678565-2188f5c9-e648-4be5-b388-e5ece81b6f8d.png)
+</br></br>
+- Step 4: you will come upon a screen like this, you must enter a case number between 0-15 (16 cases all in all)
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678698-2c170235-7e6c-43d0-92aa-dc3abedd626d.png)
+</br></br>
+- Step 5: See the game play itself!, it's somewhat of a 0-player game after all, and repeat as you'd like!
+</br></br>
+![image](https://user-images.githubusercontent.com/73063105/148678794-6eecf0fc-fd19-4a48-a9f6-eed268237869.png)
+</br></br>
+- note: a CMD (or equivalent) should appear, and you could probably view some 'calculations', if after the game it happens to not close by itself, simply close it yourself, this is *not* intended behaviour!
+
+
 ### If you're using PyCharm and scientific mode is on:
 * it may interfere with the gui, if this happens please follow these [instructions](https://stackoverflow.com/questions/48384041/pycharm-how-to-remove-sciview)
 
