@@ -3,7 +3,7 @@
  * Date - 7.1.2022
 """
 import os
-from Misc import Misc
+from Ex4.client_python.Misc import Misc
 
 
 def server_stop():

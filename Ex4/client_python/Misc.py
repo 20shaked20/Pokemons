@@ -21,7 +21,7 @@ class Misc:
 
     def is_assigned(self, pokemon, assigned_pokemons):
         """
-        This method checks if a pokemon is already assigned to another agent.
+        This is an un-used  method that checks if a pokemon is already assigned to another agent.
         """
         for p in assigned_pokemons:
             if p is not None:
@@ -60,7 +60,7 @@ class Misc:
                 if pokemon.type > 0 and src > dest: continue
                 a_p = [float(pokemon.pos.x), float(pokemon.pos.y)]  # x,y pokemon
                 b_src = [float(src[0]), float(src[1])]  # x,y for src
-                c_dst = [float(dest[0]), float(dest[1])]  # x,y for src
+                c_dst = [float(dest[0]), float(dest[1])]  # x,y for dest
 
                 bc = dist(b_src, c_dst)
                 ba = dist(b_src, a_p)
