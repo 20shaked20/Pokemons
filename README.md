@@ -71,6 +71,9 @@ Thirdly, we had to consider principles like S.O.L.I.D and MVC, and strive toward
 ## Hierarchy
 ![game_uml](https://user-images.githubusercontent.com/73894107/148647824-7fc8557d-23dd-4af1-b48b-1b70325e5063.png)
 
+### Example
+
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/73894107/148676170-e87972bc-ed87-4bd9-8978-e71178d5d362.gif)
 
 
 ## Reading Material
