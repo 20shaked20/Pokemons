@@ -61,7 +61,7 @@ Thirdly, we had to consider principles like S.O.L.I.D and MVC, and strive toward
 
 ## Lessons Learned
 ### things to improve
-- Being even more 'on the same page'
+- Spend more time in the early stages of development on project architechture
 
 ### things to keep
 - Source control
