@@ -29,8 +29,9 @@ Thirdly, we had to consider principles like S.O.L.I.D and MVC, and strive toward
 - step 2: tell the agent where he needs to go according to step 1, and broadcast the pokemon as 'taken'
 - step 3: after the agent captured the pokemon, reapeat step 1.
 </br>
-*note 1 - we are indeed in charge of where the agent starts his journey.
-*note 2 - this is the algorithm we strove for, the implementation may be missing fine details, but follow the same idea.
+*note 1 - we are indeed in charge of where the agent starts his journey.*
+</br>
+* note 2 - this is the algorithm we strove for, the implementation may be missing fine details, but follows the same idea.*
 
 
 ## The Classes
