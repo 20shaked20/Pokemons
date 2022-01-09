@@ -12,7 +12,9 @@ Last assignment in OOP course
 In this assignment we are tasked with designing a *pokemon 'game'*, in which we have a map of cities, roads between them, pokemons who sit on these roads, and agents who want to capture said pokemons. </br> </br>
 This scenario is then wittled down to a non-directed weighted graph problem, the cities become nodes, roads become edges, and pokemons and agents are represented (initially) as circles. </br> </br>
 Now, whenever an agent travels across the graph and happens to move through a road where a pokemo sits, he captures him and gains points, becoming quicker the more pokemon he catches, but there is a 'catch' ( haha :D ), while the graph is not directed, pokemons are! - that means that a capture only occurs if the agent travelled on the edge in the same direction as the pokemon 'sits' on it. </br> </br>
-e.g. - a pokemon sits on the edge from node 9 to 10 and we know that for him the source < destination, therefore the agent will have to arrive at node 9 then travel to node 10 to capture him, otherwise if for the pokemon the source > destination then the agent would have to travel to node 10 and then to node 9 to capture him.
+e.g. - a pokemon sits on the edge from node 9 to 10 and we know that for him the source < destination, therefore the agent will have to arrive at node 9 then travel to node 10 to capture him. 
+</br> 
+otherwise, if for the pokemon the source > destination then the agent would have to travel to node 10 and then to node 9 to capture him.
 
 ## Approach
 Firstly, this is not our first assignment on graphs!, weve had two previous assignments ( one in java, and on in python ) both of which contain graph related algorithm's, such as Dijkstra's shortest path for example, so we imported those algorithm's into our solution immediatly. </br>
